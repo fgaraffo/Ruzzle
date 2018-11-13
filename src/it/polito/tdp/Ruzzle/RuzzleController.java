@@ -16,6 +16,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class RuzzleController {
@@ -90,6 +91,9 @@ public class RuzzleController {
 
     @FXML // fx:id="txtStatus"
     private Label txtStatus; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="txtResult"
+    private TextArea txtResult; // Value injected by FXMLLoader
 
     @FXML
     void handleProva(ActionEvent event) {
@@ -98,17 +102,36 @@ public class RuzzleController {
     
     	if (parola.length()==0)
     	{	
-    		// segnala errore
+    		txtStatus.setText("ERRORE: parola vuota");
     		return;
     	}
     	
     	parola = parola.toUpperCase();
     	
     	// controllo solo caratteri [a-z]
-    	
+    	if (!parola.matches("[A-Z]+"))
+    	{
+    		txtStatus.setText("ERRORE: caratteri non ammessi");
+    		return;
+    	}
+    		
     	List <Pos> percorso = model.trovaParola(parola);
     	
-    	System.out.println(percorso);
+    	if (percorso != null)
+    	{
+    		for (Button b : letters.values())
+    		{
+    			b.setDefaultButton(false);
+    		}
+    		for (Pos p : percorso)
+    		{
+    			letters.get(p).setDefaultButton(true);
+    		}
+    	}
+    	else 
+    	{
+    		txtStatus.setText("Parola non trovata");
+    	}
     	
     }
     
@@ -116,6 +139,20 @@ public class RuzzleController {
     void handleReset(ActionEvent event) {
     	model.reset();
 
+    }
+    
+    @FXML
+    void handleRisolvi(ActionEvent event) {
+
+    	List <String> tutte = model.trovaTutte();
+    	
+    	txtResult.clear();
+    	
+    	txtResult.appendText(String.format("Trovate %d soluzioni\n", tutte.size()));
+    	for (String s : tutte)
+    	{
+    		txtResult.appendText(s+"\n");
+    	}
     }
 
 
@@ -172,7 +209,7 @@ public class RuzzleController {
     		this.letters.get(cell).textProperty().bind(m.getBoard().getCellValueProperty(cell));
     	}
     	
-    	this.txtStatus.textProperty().bind(m.statusTextProperty());
+    //	this.txtStatus.textProperty().bind(m.statusTextProperty());
     	
     }
 }
