@@ -8,19 +8,25 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Model {
-	private final int SIZE = 4;
+	private int SIZE = 4;
 	private Board board ;
 	private List<String> dizionario ;
 	private StringProperty statusText ;
 
 	public Model() {
+		this(4);
+	}
+	
+	public Model (int size)
+	{
+		this.SIZE = size;
 		this.statusText = new SimpleStringProperty() ;
-		
 		this.board = new Board(SIZE);
 		DizionarioDAO dao = new DizionarioDAO() ;
 		this.dizionario = dao.listParola() ;
 		statusText.set(String.format("%d parole lette", this.dizionario.size())) ;
 	
+		
 	}
 	
 	public List <Pos> trovaParola (String parola)
